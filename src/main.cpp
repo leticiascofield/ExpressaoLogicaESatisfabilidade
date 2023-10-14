@@ -8,10 +8,11 @@
 
 using namespace std;
 
-    string replaceVariablesWithValues(std::string x, std::string values) {
-        for (unsigned long int i = 0; i < x.size(); i++) {
+
+    string replaceVariablesWithValues(string x, string values) {
+        for(unsigned long int i = 0; i < x.size(); i++) {
             // Verifica se o caractere é um dígito e substitui pelo valor correspondente em values
-            if (isdigit(x[i])) {
+            if(isdigit(x[i])) {
                 int index = x[i] - '0'; // Converte o caractere para inteiro
                 x[i] = values[index];    // Substitui pelo valor correspondente em values
             }
@@ -130,28 +131,74 @@ using namespace std;
         }
     }
 
+    float completeValuate(string expression, string values) {
+        string result = replaceVariablesWithValues(expression, values);
+        TreeNode* result2 = buildInfixExpressionTree(result);
+        float result3 = evaluateInfixExpressionTree(result2);
+        return result3;
+    }
+
+    float satisfability(string expression, string values) {
+        for(unsigned long int i = 0; i < values.size(); i++){
+            if(values[i] == 'a'){
+                string case0 = values;
+                case0[i] = '0';
+                float resultCase0 = completeValuate(expression, case0);
+
+                string case1 = values;
+                case1[i] = '1';
+                float resultCase1 = completeValuate(expression, case1);
+                if(resultCase0 == 1 && resultCase1 == 1){
+                    return 1;
+                } else {
+                    return 0;
+                }
+            }
+            if(values[i] == 'e'){
+                string case0 = values;
+                case0[i] = '0';
+                float resultCase0 = completeValuate(expression, case0);
+
+                string case1 = values;
+                case1[i] = '1';
+                float resultCase1 = completeValuate(expression, case1);
+                if(resultCase0 == 1 || resultCase1 == 1){
+                    return 1;
+                } else {
+                    return 0;
+                }
+            }
+        }
+        return completeValuate(expression, values);
+    }
+    
 int main(){
 
     string comando, expressao, valoracao;
-    //cout << "Comando: ";
-    //cin >> comando;
-    //cin.ignore();
+    cout << "Comando: ";
+    cin >> comando;
+    cin.ignore();
 
-    //if(comando == "-a"){
+    if(comando == "-a"){
         cout << "Expressão: ";
         getline(cin, expressao);
         cout << "Valoração: ";
         cin >> valoracao;
-        string result = replaceVariablesWithValues(expressao, valoracao);
-        cout << "Resultado valoração: ";
-        cout << result << endl;
-        TreeNode* aux = buildInfixExpressionTree(result);
-        float aux2 = evaluateInfixExpressionTree(aux);
-        cout << "Outro resultado: ";
-        cout << aux2 << endl; 
 
-    //} else {
-        return 0;
-    //}
+        float result = completeValuate(expressao, valoracao);
+        cout << "Resultado avaliação: ";
+        cout << result << endl; 
 
+    } else if(comando == "-s") {
+        cout << "Expressão: ";
+        getline(cin, expressao);
+        cout << "Valoração: ";
+        cin >> valoracao;
+
+        float result = satisfability(expressao, valoracao);
+        cout << "Resultado avaliação: ";
+        cout << result << endl; 
+        
+    }
+    return 0;
 }
