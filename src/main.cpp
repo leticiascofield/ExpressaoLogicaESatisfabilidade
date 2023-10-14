@@ -138,7 +138,7 @@ using namespace std;
         return result3;
     }
 
-    float satisfability(string expression, string values) {
+    float satisfability(string expression, string& values) {
         for(unsigned long int i = 0; i < values.size(); i++){
             if(values[i] == 'a'){
                 string case0 = values;
@@ -162,16 +162,24 @@ using namespace std;
                 string case1 = values;
                 case1[i] = '1';
                 float resultCase1 = completeValuate(expression, case1);
-                if(resultCase0 == 1 || resultCase1 == 1){
+                if(resultCase0 == 1 && resultCase1 == 1){
+                    values[i] = 'a';
                     return 1;
-                } else {
+                } else if(resultCase0 == 1){
+                    values = case0;
+                    return 1;
+                } else if(resultCase1 == 1){
+                    values = case1;
+                    return 1;
+                }
+                else {
                     return 0;
                 }
             }
         }
         return completeValuate(expression, values);
     }
-    
+
 int main(){
 
     string comando, expressao, valoracao;
@@ -197,8 +205,11 @@ int main(){
 
         float result = satisfability(expressao, valoracao);
         cout << "Resultado avaliação: ";
+        if(result == 1){
+            cout << result << " " << valoracao << endl; 
+        } else {
         cout << result << endl; 
-        
+        }
     }
     return 0;
 }
