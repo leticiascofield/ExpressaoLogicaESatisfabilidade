@@ -20,15 +20,7 @@ using namespace std;
     }
 
     bool isOperator (string x) {
-        if(x == "|" || x == "&"){
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    bool isOperatorNegation (string x) {
-        if(x == "~"){
+        if(x == "~" || x == "|" || x == "&"){
             return true;
         } else {
             return false;
@@ -49,7 +41,7 @@ using namespace std;
     }
 
     float evaluate(float b, string op){
-        if(op == "~") return !(b != 0);
+        if(op == "~") return !b;
         return 0;
     }
 
@@ -66,45 +58,52 @@ using namespace std;
                 while(op_st.getTop() != "("){
                     TreeNode* node = new TreeNode(op_st.getTop());
                     op_st.pop();
-                    node->right = st.getTop();
-                    st.pop();
-                    node->left = st.getTop();
-                    st.pop();
+                    if(node->val == "~"){
+                        node->right = st.getTop();
+                        st.pop();
+                    } else{
+                        node->right = st.getTop();
+                        st.pop();
+                        node->left = st.getTop();
+                        st.pop();
+                    }
                     st.push(node);
                 }
                 op_st.pop();
-            } else if(isOperator(token)){
-                while(!op_st.isEmpty() && op_st.getTop() != "(" && getOperatorPrecedence(token) <= getOperatorPrecedence(op_st.getTop())){
+            } else if (isOperator(token)) {
+                while (!op_st.isEmpty() && op_st.getTop() != "(" && getOperatorPrecedence(token) <= getOperatorPrecedence(op_st.getTop())) {
                     TreeNode* node = new TreeNode(op_st.getTop());
                     op_st.pop();
-                    node->right = st.getTop();
-                    st.pop();
-                    node->left = st.getTop();
-                    st.pop();
+                    if (node->val == "~") {
+                        node->right = st.getTop();
+                        st.pop();
+                    } else {
+                        node->right = st.getTop();
+                        st.pop();
+                        node->left = st.getTop();
+                        st.pop();
+                    }
                     st.push(node);
                 }
                 op_st.push(token);
-            } else if(isOperatorNegation(token)){
-                while(!op_st.isEmpty() && op_st.getTop() != "(" && getOperatorPrecedence(token) <= getOperatorPrecedence(op_st.getTop())){
-                    TreeNode* node = new TreeNode(op_st.getTop());
-                    op_st.pop();
-                    node->right = st.getTop();
-                    st.pop();
-                    st.push(node);
-                }
-                op_st.push(token);
-            } else{
+            } else {
                 TreeNode* node = new TreeNode(token);
                 st.push(node);
             }
         }
+
         while(!op_st.isEmpty()){
             TreeNode* node = new TreeNode(op_st.getTop());
             op_st.pop();
-            node->right = st.getTop();
-            st.pop();
-            node->left = st.getTop();
-            st.pop();
+            if (node->val == "~") {
+                node->right = st.getTop();
+                st.pop();
+            } else {
+                node->right = st.getTop();
+                st.pop();
+                node->left = st.getTop();
+                st.pop();
+            }
             st.push(node);
         }
         return st.getTop();
@@ -124,8 +123,10 @@ using namespace std;
 
         if(root->val == "|" || root->val == "&"){  // rever isso aqui, questão da negação
             return evaluate(left, right, root->val);
-        } else {
+        } else if(root->val == "~"){
             return evaluate(right, root->val);
+        } else {
+            return 0;
         }
     }
 
