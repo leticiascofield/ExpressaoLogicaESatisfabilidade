@@ -10,14 +10,15 @@ using namespace std;
 
 
     string replaceVariablesWithValues(string x, string values) {
+        string result = x;
         for(unsigned long int i = 0; i < x.size(); i++) {
             // Verifica se o caractere é um dígito e substitui pelo valor correspondente em values
             if(isdigit(x[i])) {
                 int index = x[i] - '0'; // Converte o caractere para inteiro
-                x[i] = values[index];    // Substitui pelo valor correspondente em values
+                result[i] = values[index];    // Substitui pelo valor correspondente em values
             }
         }
-        return x;
+        return result;
     }
 
     bool isOperator (string x) {
@@ -110,28 +111,34 @@ using namespace std;
         return st.getTop();
     }
 
-    float evaluateInfixExpressionTree(TreeNode* root){ //bool
-        if(!root){
+    float evaluateInfixExpressionTree(TreeNode* root) {
+        if (!root) {
             return 0;
         }
 
-        if(!root->left && !root->right){
-            return stof(root->val); 
+        if (!root->left && !root->right) {
+            return stof(root->val);
+        }
+
+        if (root->val == "~") {
+            float right = evaluateInfixExpressionTree(root->right);
+            return !right; // Inverte o valor
         }
 
         float left = evaluateInfixExpressionTree(root->left);
         float right = evaluateInfixExpressionTree(root->right);
 
-        if(root->val == "|" || root->val == "&"){  // rever isso aqui, questão da negação
-            return evaluate(left, right, root->val);
-        } else if(root->val == "~"){
-            return evaluate(right, root->val);
-        } else {
-            return 0;
+        if (root->val == "|") {
+            return left || right;
+        } else if (root->val == "&") {
+            return left && right;
         }
+
+        return 0;
     }
 
-    float completeValuate(string expression, string values) {
+
+    float completeEvaluate(string expression, string values) {
         string result = replaceVariablesWithValues(expression, values);
         TreeNode* result2 = buildInfixExpressionTree(result);
         float result3 = evaluateInfixExpressionTree(result2);
@@ -177,7 +184,7 @@ using namespace std;
                 }
             }
         }
-        return completeValuate(expression, values);
+        return completeEvaluate(expression, values);
     }
 
 int main(int argc, char *argv[]){
@@ -189,7 +196,7 @@ int main(int argc, char *argv[]){
     switch (argv[1][3]) {
         case 'a':
 
-            result = completeValuate(expression, values);
+            result = completeEvaluate(expression, values);
             cout << "Resultado avaliação: ";
             cout << result << endl; 
             break;
