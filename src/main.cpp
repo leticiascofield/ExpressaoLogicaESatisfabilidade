@@ -8,6 +8,18 @@
 
 using namespace std;
 
+    string removeDoubleNegation(string expression) {
+        string result = expression;
+        size_t length = expression.length();
+        for (size_t i = 0; i < length - 2; ++i) {
+            if (result[i] == '~' && result[i + 2] == '~') {
+                result.erase(i, 4);
+                length -= 2;
+                --i;
+            }
+        }
+        return result;
+    }
 
     string replaceVariablesWithValues(string x, string values) {
         string result = x;
@@ -120,18 +132,17 @@ using namespace std;
             return stof(root->val);
         }
 
-        if (root->val == "~") {
-            float right = evaluateInfixExpressionTree(root->right);
-            return !right; // Inverte o valor
-        }
-
-        float left = evaluateInfixExpressionTree(root->left);
-        float right = evaluateInfixExpressionTree(root->right);
-
         if (root->val == "|") {
+            float left = evaluateInfixExpressionTree(root->left);
+            float right = evaluateInfixExpressionTree(root->right);
             return left || right;
         } else if (root->val == "&") {
+            float left = evaluateInfixExpressionTree(root->left);
+            float right = evaluateInfixExpressionTree(root->right);
             return left && right;
+        } else if (root->val == "~") {
+            float right = evaluateInfixExpressionTree(root->right);
+            return !right; // Inverte o valor
         }
 
         return 0;
@@ -140,9 +151,10 @@ using namespace std;
 
     float completeEvaluate(string expression, string values) {
         string result = replaceVariablesWithValues(expression, values);
-        TreeNode* result2 = buildInfixExpressionTree(result);
-        float result3 = evaluateInfixExpressionTree(result2);
-        return result3;
+        string result2 = removeDoubleNegation(result);
+        TreeNode* result3 = buildInfixExpressionTree(result2);
+        float result4 = evaluateInfixExpressionTree(result3);
+        return result4;
     }
 
     float satisfability(string expression, string& values) {
@@ -161,6 +173,7 @@ using namespace std;
                     return 0;
                 }
             }
+
             if(values[i] == 'e'){
                 string case0 = values;
                 case0[i] = '0';
@@ -182,9 +195,19 @@ using namespace std;
                 else {
                     return 0;
                 }
-            }
+            } 
         }
         return completeEvaluate(expression, values);
+    }
+
+    string changeEtoA (string values){
+        string result = values;
+        for(unsigned long int i = 0; i < values.size(); i++){
+            if(values[i] == 'e'){
+                result[i] = 'a';
+            }
+        }
+        return result;
     }
 
 int main(int argc, char *argv[]){
@@ -192,19 +215,21 @@ int main(int argc, char *argv[]){
     string expression = argv[2];
     string values = argv[3];
     float result;
+    string teste;
 
     switch (argv[1][3]) {
         case 'a':
 
             result = completeEvaluate(expression, values);
             cout << "Resultado avaliação: ";
-            cout << result << endl; 
+            cout << result << endl;
             break;
 
         case 's':
 
             result = satisfability(expression, values);
-            cout << "Resultado avaliação: ";
+            values = changeEtoA(values);
+            cout << "Resultado satisfatibilidade: ";
             if(result == 1){
                 cout << result << " " << values << endl; 
             } else {
