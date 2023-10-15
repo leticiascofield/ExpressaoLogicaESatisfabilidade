@@ -1,7 +1,7 @@
 CC=g++
 CFLAGS= -Wall -g
 
-TARGET= ./bin/InfixaPosfixa
+TARGET= ./bin/tp1.out
 OBJ_DIR = ./obj
 SRC_DIR = ./src
 INCLUDE_DIR = ./include
@@ -31,7 +31,7 @@ ${OBJ_DIR}/main.o: ${INCLUDE_DIR}/TreeNode.hpp ${INCLUDE_DIR}/NodeStackNode.hpp 
 	${CC} ${CFLAGS} -I ${INCLUDE_DIR}/ -c ${SRC_DIR}/main.cpp -o ${OBJ_DIR}/main.o
 
 run: all
-	${TARGET} ./InfixaPosfixa
+	${TARGET} ./tp1.out
 
 clean:
 	rm -f ${OBJ_DIR}/* ${TARGET}

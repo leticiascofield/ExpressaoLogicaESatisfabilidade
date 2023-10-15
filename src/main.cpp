@@ -143,11 +143,11 @@ using namespace std;
             if(values[i] == 'a'){
                 string case0 = values;
                 case0[i] = '0';
-                float resultCase0 = completeValuate(expression, case0);
+                float resultCase0 = satisfability(expression, case0);
 
                 string case1 = values;
                 case1[i] = '1';
-                float resultCase1 = completeValuate(expression, case1);
+                float resultCase1 = satisfability(expression, case1);
                 if(resultCase0 == 1 && resultCase1 == 1){
                     return 1;
                 } else {
@@ -157,11 +157,11 @@ using namespace std;
             if(values[i] == 'e'){
                 string case0 = values;
                 case0[i] = '0';
-                float resultCase0 = completeValuate(expression, case0);
+                float resultCase0 = satisfability(expression, case0);
 
                 string case1 = values;
                 case1[i] = '1';
-                float resultCase1 = completeValuate(expression, case1);
+                float resultCase1 = satisfability(expression, case1);
                 if(resultCase0 == 1 && resultCase1 == 1){
                     values[i] = 'a';
                     return 1;
@@ -180,36 +180,30 @@ using namespace std;
         return completeValuate(expression, values);
     }
 
-int main(){
+int main(int argc, char *argv[]){
 
-    string comando, expressao, valoracao;
-    cout << "Comando: ";
-    cin >> comando;
-    cin.ignore();
+    string expression = argv[2];
+    string values = argv[3];
+    float result;
 
-    if(comando == "-a"){
-        cout << "Expressão: ";
-        getline(cin, expressao);
-        cout << "Valoração: ";
-        cin >> valoracao;
+    switch (argv[1][3]) {
+        case 'a':
 
-        float result = completeValuate(expressao, valoracao);
-        cout << "Resultado avaliação: ";
-        cout << result << endl; 
+            result = completeValuate(expression, values);
+            cout << "Resultado avaliação: ";
+            cout << result << endl; 
+            break;
 
-    } else if(comando == "-s") {
-        cout << "Expressão: ";
-        getline(cin, expressao);
-        cout << "Valoração: ";
-        cin >> valoracao;
+        case 's':
 
-        float result = satisfability(expressao, valoracao);
-        cout << "Resultado avaliação: ";
-        if(result == 1){
-            cout << result << " " << valoracao << endl; 
-        } else {
-        cout << result << endl; 
-        }
+            result = satisfability(expression, values);
+            cout << "Resultado avaliação: ";
+            if(result == 1){
+                cout << result << " " << values << endl; 
+            } else {
+            cout << result << endl; 
+            }
     }
+
     return 0;
 }
