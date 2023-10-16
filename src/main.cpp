@@ -21,16 +21,36 @@ using namespace std;
         return result;
     }
 
-    string replaceVariablesWithValues(string x, string values) {
-        string result = x;
-        for(unsigned long int i = 0; i < x.size(); i++) {
-            // Verifica se o caractere é um dígito e substitui pelo valor correspondente em values
-            if(isdigit(x[i])) {
-                int index = x[i] - '0'; // Converte o caractere para inteiro
-                result[i] = values[index];    // Substitui pelo valor correspondente em values
+    string replaceVariablesWithValues(string x, string values) { // Substitui a variável pelo seu valor (para casos 1 ou 2 dígitos)
+        string result = "";
+        unsigned long int i = 0;
+
+        while (i < x.size()) {
+            string result = "";
+            unsigned long int i = 0;
+
+            while (i < x.size()) {
+                if (isdigit(x[i])) {
+                    int num = 0;
+                    if (i + 1 < x.size() && isdigit(x[i + 1])) {
+                        num = (x[i] - '0') * 10 + (x[i + 1] - '0');
+                        i += 2;
+                    } else {
+                        num = x[i] - '0';
+                        i++;
+                    }
+                    if (num >= 0 && num <= 99 && num < values.size()) {
+                        result += values[num];
+                    } else {
+                        result += to_string(num);
+                    }
+                } else {
+                    result += x[i];
+                    i++;
+                }
             }
+            return result;
         }
-        return result;
     }
 
     bool isOperator (string x) {
@@ -150,11 +170,17 @@ using namespace std;
 
 
     float completeEvaluate(string expression, string values) {
-        string result = replaceVariablesWithValues(expression, values);
-        string result2 = removeDoubleNegation(result);
-        TreeNode* result3 = buildInfixExpressionTree(result2);
-        float result4 = evaluateInfixExpressionTree(result3);
-        return result4;
+        if(expression.size() > 1){
+            string result = replaceVariablesWithValues(expression, values);
+            string result2 = removeDoubleNegation(result);
+            TreeNode* result3 = buildInfixExpressionTree(result2);
+            float result4 = evaluateInfixExpressionTree(result3);
+            return result4;
+        } else if (values[0] == '0') {
+            return 0;
+        } else {
+            return 1;
+        }
     }
 
     float satisfability(string expression, string& values) {
@@ -215,13 +241,11 @@ int main(int argc, char *argv[]){
     string expression = argv[2];
     string values = argv[3];
     float result;
-    string teste;
 
-    switch (argv[1][3]) {
+    switch (argv[1][1]) {
         case 'a':
 
             result = completeEvaluate(expression, values);
-            cout << "Resultado avaliação: ";
             cout << result << endl;
             break;
 
@@ -229,7 +253,6 @@ int main(int argc, char *argv[]){
 
             result = satisfability(expression, values);
             values = changeEtoA(values);
-            cout << "Resultado satisfatibilidade: ";
             if(result == 1){
                 cout << result << " " << values << endl; 
             } else {
